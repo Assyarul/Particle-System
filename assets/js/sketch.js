@@ -6,7 +6,6 @@ function setup() {
 function draw() {
   let GRAVITY = createVector(0,0.2);
   background(220);
-  console.log(particle1.velocity);
   
   particle1.exertForce(GRAVITY);
 
@@ -17,8 +16,9 @@ function draw() {
 }
 
 function reset(){
-  particle1 = new Particle(createVector(200,0), createVector(5,0), 10, createVector(0,0));
+  particle1 = new Particle(200,0, 50);
 }
+
 function mousePressed(){
-  reset();
+  particle1.exertForce(createVector(10,-10));
 }
