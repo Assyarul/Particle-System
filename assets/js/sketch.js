@@ -1,24 +1,31 @@
 function setup() {
   createCanvas(400,400);
-  reset();
+
+  //add all particles to system.
+  particle1 = new Particle(200, 0, 1, 50);
+  engine = new Engine(9.8, width, height);
+  engine.addObject(particle1);  
+
+  //variables to ensure deterministic
+  frameRate(60);
+  timeStep = 1/60;
+  accumulator = 0;
 }
 
 function draw() {
-  let GRAVITY = createVector(0,0.2);
   background(220);
-  
-  particle1.exertForce(GRAVITY);
+  //deltaTime is the real time difference between previous frame and this frame.
+  accumulator += deltaTime; 
 
-  particle1.updatePos(); 
-  particle1.display();
-  particle1.checkEdges(400);
+  if (accumulator > 0.2){
+    accumulator = 0.2;
+  }
+  while (accumulator > timeStep) {
+    engine.updateEngine(timeStep);
+    accumulator -= timeStep;
+  }
 
-}
-
-function reset(){
-  particle1 = new Particle(200,0, 50);
-}
-
-function mousePressed(){
-  particle1.exertForce(createVector(10,-10));
+  //linear interpolation
+  const alpha = accumulator/timeStep;
+  engine.renderEngine(alpha);
 }

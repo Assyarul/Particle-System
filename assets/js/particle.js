@@ -1,46 +1,19 @@
 class Particle {
-    constructor(x, y, diameter) {
+    constructor(x, y, mass, diameter) {
         this.pos = createVector(x,y);
+        this.prevPos = createVector(0,0);
         this.velocity = createVector(0,0);
-        this.acceleration = createVector(0,0);
         this.diameter = diameter;
+        this.mass = mass;
     }
 
-    exertForce(force){
-        this.acceleration.add(force);
+    updateParticle(force, dt) {
+        this.prevPos = this.pos.copy();
+        this.velocity.add(force.copy().mult(dt).mult(1/this.mass));
+        this.pos.add(this.velocity.copy().mult(dt));
     }
 
-    // In each frame, acceleration will reset.
-    updatePos() {
-        this.velocity.add(this.acceleration);
-        this.pos.add(this.velocity);
-        this.acceleration.mult(0);
+    toString() {
+        return `${this.pos} at ${this.mass} kg and ${this.diameter} m`;
     }
-
-    // Prevent particle from exceeding the box boundary. added dampening effect.
-    checkEdges(height) {
-        if (this.pos.y > (height-this.diameter/2)) {
-            this.velocity.y *= -0.8;
-            this.pos.y = (height - this.diameter/2);
-        } else if (this.pos.y < this.diameter/2) {
-            this.velocity.y *= -0.8;
-            this.pos.y = this.diameter/2;
-        }
-
-        if (this.pos.x > (width-this.diameter/2)) {
-            this.velocity.x *= -0.8;
-            this.pos.x = (width - this.diameter/2);
-        } else if (this.pos.x < this.diameter/2) {
-            this.velocity.x *= -0.8;
-            this.pos.x = this.diameter/2;
-        }
-    }
-
-    display() {
-        stroke(0);
-        strokeWeight(2);
-        fill(255,127);
-        ellipse(this.pos.x, this.pos.y, this.diameter);
-    }
-
 }
