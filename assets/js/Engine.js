@@ -1,5 +1,5 @@
 // Class that contains variables that determine the basic physics of objects.
-// Currently objects has the same mass.
+// Engine will be the one applying the forces unto the objects.
 // No collision detection between objects
 // Locked time-step Physics Engine i.e timeStep is fixed throughout.
 class Engine {
@@ -12,6 +12,10 @@ class Engine {
 
     addObject(particle) {
         this.objects.push(particle);
+    }
+
+    exertForce(force,particle) {
+        particle.totalforce.add(force);
     }
 
     calculateGravity(particle) {
@@ -41,7 +45,8 @@ class Engine {
 
     updateEngine(dt){
         this.objects.forEach(function(object){
-            object.updateParticle(this.calculateGravity(object),dt);
+            this.exertForce(this.calculateGravity(object),object);
+            object.updateParticle(dt);
             this.checkEdges(object);
         }, this);
     }
@@ -49,12 +54,7 @@ class Engine {
     // uses linear interpolation
     renderEngine(alpha) {
         this.objects.forEach(function(object){
-            let interpolatedpos = p5.Vector.lerp(object.prevPos,object.pos,alpha);
-            object.prevPos = object.pos;
-            stroke(0);
-            strokeWeight(object.mass);
-            fill(255,127);
-            ellipse(interpolatedpos.x, interpolatedpos.y, object.diameter);
+            object.renderParticle(alpha);
         });
     }
 
