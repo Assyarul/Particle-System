@@ -8,6 +8,8 @@ class Engine {
         this.height = height;
         this.width = width;
         this.objects = [];
+
+        this.colsolver = new CollisionSolver();
     }
 
     addObject(particle) {
@@ -18,8 +20,10 @@ class Engine {
         particle.totalforce.add(force);
     }
 
-    calculateGravity(particle) {
-        return this.gravity.copy().mult(particle.mass); // F=ma
+    exertGravity(particle) {
+        if (!(particle.pos.y == (this.height - particle.diameter/2))) { //to "ground" objects to the ground if they are not in the air
+            this.exertForce(p5.Vector.mult(this.gravity,particle.mass),particle);
+        }
     }
 
     checkEdges(particle) {
@@ -45,8 +49,10 @@ class Engine {
 
     updateEngine(dt){
         this.objects.forEach(function(object){
-            this.exertForce(this.calculateGravity(object),object);
+            this.exertGravity(object);
+            console.log(object.totalforce);
             object.updateParticle(dt);
+            this.colsolver.solveCollision(this.objects);
             this.checkEdges(object);
         }, this);
     }
